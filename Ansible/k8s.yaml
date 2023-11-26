@@ -1,0 +1,21 @@
+---
+- name: Deploy Kubernetes Application
+  hosts: k8s  # Replace with your target Kubernetes master host or group
+  gather_facts: yes  # Gather facts about the target host
+
+  tasks:
+    - name: Delete Deployment
+      command: kubectl delete -f /home/ubuntu/deployment.yaml
+
+    - name: Remove file
+      command: rm -rf /home/ubuntu/deployment.yaml
+      
+    - name: Copy deployment.yaml to Kubernetes master
+      copy:
+        src: /var/lib/jenkins/workspace/petstore/deployment.yaml  # Assuming Jenkins workspace variable
+        dest: /home/ubuntu/
+      become: yes  # Use sudo for copying if required
+      become_user: root  # Use a privileged user for copying if required
+
+    - name: Apply Deployment
+      command: kubectl apply -f /home/ubuntu/deployment.yaml
